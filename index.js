@@ -12,6 +12,24 @@ const app = express();
 require('dotenv/config');
 
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
+const newBookingRoute = require('./routes/newBooking');
+const adminRoute = require('./routes/admin');
+const ticketStatusRoute = require('./routes/ticketStatus');
+
+
+
+
+//Middlewares
+app.use('/newBooking', newBookingRoute);
+app.use('/admin', adminRoute);
+app.use('/ticketStatus', ticketStatusRoute);
+
+//Routes
 
 
 app.get('/', (res)=>{
@@ -23,4 +41,13 @@ app.listen(3000,(err)=>{
     if (err)
         throw err;
     console.log("Listening to 3000");
+});
+
+
+mongoose.connect(process.env.DBCONN,
+ { useNewUrlParser: true, useUnifiedTopology: true  },
+   (error)=>{
+    if (error)
+        throw error;
+    console.log("database connection successfull");
 });
