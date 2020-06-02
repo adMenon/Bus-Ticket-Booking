@@ -32,7 +32,11 @@ router.patch('/deleteTicket', async (req,res)=>{
         var seats = req.body.seats;
         var BusID = req.body.BusID;
         
-
+        if(BusID==undefined || BookingID==undefined || BusID==undefined )
+        {
+            console.log("input invalid");
+            return res.status(400).json({Message:"input invalid"});
+        }
     
         const updateBus = await Bus.updateMany({BusID:BusID,BookingID:BookingID, seatNo: {$in : seats}},
             {"$set":{isBooked:false},
