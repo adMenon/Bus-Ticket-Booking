@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Passenger = require('./Passenger');
+const User = require('./user');
 
 const BusSchema = mongoose.Schema({
     BusID:{
@@ -15,8 +15,7 @@ const BusSchema = mongoose.Schema({
         default:false
     },
     PassengerDetails:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Passenger'
+        type:Object
     },
     BookingID:{
         type: String

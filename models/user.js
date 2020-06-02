@@ -1,0 +1,31 @@
+const mongoose = require('mongoose');
+// var uniqueValidator = require('mongoose-unique-validator');
+
+const UserSchema = new mongoose.Schema({
+    Name:{
+        type:String,
+        required:true
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true,
+        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+    },
+    PhoneNumber:{
+        type:String,
+        required:true,
+        unique:true
+    },
+    Password:{
+        type: String,
+        required:true
+    },
+    isAdmin:{
+        type: Boolean,
+        default: false
+    }
+});
+
+// PassengerSchema.plugin(uniqueValidator);
+module.exports = mongoose.model('User', UserSchema);

@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const Bus = require("../models/Bus");
+const Bus = require("../models/bus");
 
 
 

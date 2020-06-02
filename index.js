@@ -20,14 +20,18 @@ app.use(bodyParser.json());
 const newBookingRoute = require('./routes/newBooking');
 const adminRoute = require('./routes/admin');
 const ticketStatusRoute = require('./routes/ticketStatus');
+const userAuthRoutes = require('./routes/userAuth');
 
 
 
 
 //Middlewares
+
+app.use('/userAuth', userAuthRoutes);
 app.use('/newBooking', newBookingRoute);
 app.use('/admin', adminRoute);
 app.use('/ticketStatus', ticketStatusRoute);
+
 
 //Routes
 
