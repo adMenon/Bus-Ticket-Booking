@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const router = express.Router();
 
 const Bus = require("../models/bus");
@@ -7,10 +6,8 @@ const Bus = require("../models/bus");
 
 router.post('/viewTicket',async (req,res)=>{
     try{
-        var bookingId = req.body.bookingId;
-        var phoneNumber = req.body.phoneNumber;
-        
-        const getTickets = await Bus.find({BookingId:bookingId, PhoneNumber: phoneNumber}).populate('PassengerDetails');
+        var bookingID = req.body.bookingID;
+        const getTickets = await Bus.find({BookingID:bookingID}).select({_id:0,__v:0});
         console.log(getTickets);
         if(getTickets.length==0){
             res.send("No tickets found");
@@ -18,26 +15,37 @@ router.post('/viewTicket',async (req,res)=>{
         res.json(getTickets);
     }
     catch(err){
-        res.send("err");
+        res.json({Message:err});
         throw err;
     }
 });
-router.delete('/deleteTicket', async (req,res)=>{
+router.patch('/deleteTicket', async (req,res)=>{
     try{
         console.log(req.body);
-        var bookingId = req.body.bookingId;
+        var BookingID = req.body.BookingID;
         var seats = req.body.seats;
-        var busId = req.body.busId;
+        var BusID = req.body.BusID;
         
 
-        
-        const updateBus = await Bus.updateMany({BusID:busId,Booking_ID:bookingId, seatNo: {$in : seats}},
-            {"$set":{isBooked:false}, "$unset":{PassengerDetails:1, BookingID:1, PhoneNumber:1, DateOfBooking:1}});
+    
+        const updateBus = await Bus.updateMany({BusID:BusID,BookingID:BookingID, seatNo: {$in : seats}},
+            {"$set":{isBooked:false},
+             "$unset":{PassengerAge:1,
+                PassengerName:1,
+                PassengerGender:1,
+                BookingID:1,
+                PhoneNumber:1,
+                DateOfBooking:1}
+            });
         console.log(updateBus);
-        res.json(updateBus);
+        if(updateBus.n==0){
+            res.json({Message: "given seats dont match"});
+
+        }
+        res.json({Message:updateBus.n +" tickets cancelled"});
     }
     catch(err){
-        res.send("err");
+        res.json({Message:err});
         throw err;
     }
 });

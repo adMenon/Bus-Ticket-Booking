@@ -15,7 +15,7 @@ router.get('/showOpen', async(req, res)=>{
     }
     try{
 
-        const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:false});
+        const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:false}).select({seatNo:1, _id:0});
         res.send({"Open Seats":seatDetails});
     }
     catch(err){
@@ -24,15 +24,15 @@ router.get('/showOpen', async(req, res)=>{
     }
 });
 router.get('/showClosed', async(req, res)=>{
-    console.log(req.query);
+    console.log(req.query.BusID);
     if(req.query.BusID==undefined)
     {
-        console.log("BusId invalid");
+        console.log("BusID invalid");
         res.json({Message:"BusID invalid"});
     }
     try{
-
-        const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:true});
+        
+        const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:true}).select({seatNo:1, _id:0});
         res.send({"Closed Seats":seatDetails});
     }
     catch(err){
@@ -42,33 +42,52 @@ router.get('/showClosed', async(req, res)=>{
 })
 
 
-// router.post('/book',async(req,res)=>{
+router.post('/book',async(req,res)=>{
 
-//     console.log(req.body);
-//     try{
-//         var tickets = [];
-//         var Booking = req.body.booking;
-//         var BId = uniqid();
-//         const seatDetails = await Bus.find({BusID:req.body.BusId}).select({isBooked:1, _id:0})
-//         // console.log(seatDetails);
-//         await Promise.all(Booking.map(async(element) => {
+    console.log(req.body);
+    try{
+        var tickets = [];
+        var Booking = req.body.booking;
+        var BId = uniqid();
+        if(req.body.BusID==undefined)
+        {
+            console.log("BusId invalid");
+            res.json({Message:"BusID invalid"});
+        }
+        const seatDetails = await Bus.find({BusID:req.body.BusID}).select({isBooked:1, _id:0})
+        console.log(seatDetails);
+        if(seatDetails.length==0){
+            console.log("No seats available");
+            res.json({Message:"No seats available"});
+        }
+        await Promise.all(Booking.map(async(element) => {
+            if(element.seatNo>seatDetails.length || seatDetails[element.seatNo-1].isBooked){
+                res.json({Message:"Seat not Available"});
+                throw new Error("Seat not available");
+            }
             
-//             if(element.seatNo>seatDetails.length || seatDetails[element.seatNo-1].isBooked){
-//                 throw new Error("Seat not available");
-//             }
-//             const passenger = new Passenger(element.Passenger);
-//             // console.log(insertPassenger);
-//             const updateBus = await Bus.findOneAndUpdate({BusID : req.body.BusId, seatNo : element.seatNo},
-//                 {"$set":{isBooked:true, PassengerDetails:passenger._id, BookingID:BId, PhoneNumber: req.body.PhoneNumber, DateOfBooking: Date.now }},
-//                 {new:true}).populate('PassengerDetails');
-//             tickets.push(updateBus); 
-//         }));
-//         res.send(tickets);
-//     }catch(err){
-//         res.send("error");
-//         throw err;
-//     }
-// });
+            const PassengerDetails = element.Passenger;
+            const updateBus = await Bus.findOneAndUpdate({BusID : req.body.BusID, seatNo : element.seatNo},
+                {"$set":{
+                            isBooked:true,
+                            PassengerName:PassengerDetails.Name,
+                            PassengerAge: PassengerDetails.Age,
+                            PassengerGender: PassengerDetails.Gender,
+                            BookingID:BId,
+                            DateOfBooking: Date.now,
+                            BookedBy: {"email":req.UserData.email,"PhoneNumber":req.UserData.PhoneNumber}
+                        }
+                },
+                {new:true});
+            console.log(updateBus);
+            tickets.push(updateBus); 
+        }));
+        res.send(tickets);
+    }catch(err){
+        res.json({Message:err});
+        throw err;
+    }
+});
 
 
 module.exports = router;

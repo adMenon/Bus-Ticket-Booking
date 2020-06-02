@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const User = require('./user');
 
 const BusSchema = mongoose.Schema({
     BusID:{
@@ -14,17 +13,23 @@ const BusSchema = mongoose.Schema({
         type : Boolean,
         default:false
     },
-    PassengerDetails:{
+    PassengerName:{
         type:Object
+    },
+    PassengerAge:{
+        type:Number
+    },
+    PassengerGender:{
+        type:String
     },
     BookingID:{
         type: String
     },
-    PhoneNumber:{
-        type: String,
-    },
     DateofBooking:{
-        type: Date,
+        type: Date
+    },
+    BookedBy:{
+        type:Object
     }
 });
 

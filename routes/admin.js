@@ -30,13 +30,18 @@ router.post('/addBus', async(req, res)=>{
         throw err;
     }
 });
-router.get('/getBuses/:BusID', async(req,res)=>{
+router.get('/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
         res.json("Access Denied");
     }
     try{
-        const Buses = await Bus.find({BusID:req.params.BusID}).populate('PassengerDetails');
+        if(req.params.BusID==undefined)
+        {
+            console.log("BusId invalid");
+            res.json({Message:"BusID invalid"});
+        }
+        const Buses = await Bus.find({BusID:req.params.BusID});
         console.log(Buses);
         res.json(Buses);
     }
@@ -48,12 +53,17 @@ router.get('/getBuses/:BusID', async(req,res)=>{
 
 
 
-router.patch('/reset/:BusID', async(req,res)=>{
+router.put('/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
         res.json("Access Denied");
     }
     try{
+        if(req.params.BusID==undefined)
+        {
+            console.log("BusId invalid");
+            res.json({Message:"BusID invalid"});
+        }
         const updateBus = await Bus.updateMany({BusID:req.params.BusID},
             {"$set":{isBooked:false}, "$unset":{PassengerDetails:1, BookingID:1, PhoneNumber:1, DateOfBooking:1}});
         console.log(updateBus+" \nTickets deleted, seats flushed");
@@ -82,17 +92,25 @@ router.delete('/deleteAll', async(req,res)=>{
 });
 
 
-router.delete('/deleteBus', async(req,res)=>{
+router.delete('/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
         res.json("Access Denied");
     }
     try{
-        const removedBus = await Bus.remove({_id:req.body.busId});
+        if(req.params.BusID==undefined)
+        {
+            console.log("BusId invalid");
+            res.json({Message:"BusID invalid"});
+        }
+        const removedBus = await Bus.deleteMany({BusID:req.params.BusID});
+        console.log(removedBus)
         res.json(removedBus);
     }
-    catch{
+    catch(err){
+
         res.send({"error":err});
+        throw err;
     }
 });
 

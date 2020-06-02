@@ -71,7 +71,8 @@ router.post('/login', async(req,res)=>{
 
 router.delete('/deleteUser', async(req,res)=>{
     try{
-        const deleteUser = await User.findOneAndDelete({email:req.body.UserID});
+        const deleteUser = await User.findOneAndDelete({email:req.body.email});
+        console.log(deleteUser)
         if(deleteUser==null){
             res.json("Delete failed");
             throw new Error('no account failed');
