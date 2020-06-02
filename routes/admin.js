@@ -4,14 +4,14 @@ const router = express.Router();
 
 const Bus = require("../models/bus");
 
-
-
-
-
-
 var busId = 90000;
 
 router.post('/addBus', async(req, res)=>{
+    
+    if(req.UserData.isAdmin==false){
+        console.log("Access Denied");
+        res.json("Access Denied");
+    }
     var noOfSeats = req.body.noOfSeats;
     var busSeats = [];
     for(var i = 1;i<=noOfSeats;i++){
@@ -31,6 +31,10 @@ router.post('/addBus', async(req, res)=>{
     }
 });
 router.get('/getBuses/:BusID', async(req,res)=>{
+    if(req.UserData.isAdmin==false){
+        console.log("Access Denied");
+        res.json("Access Denied");
+    }
     try{
         const Buses = await Bus.find({BusID:req.params.BusID}).populate('PassengerDetails');
         console.log(Buses);
@@ -45,6 +49,10 @@ router.get('/getBuses/:BusID', async(req,res)=>{
 
 
 router.patch('/reset/:BusID', async(req,res)=>{
+    if(req.UserData.isAdmin==false){
+        console.log("Access Denied");
+        res.json("Access Denied");
+    }
     try{
         const updateBus = await Bus.updateMany({BusID:req.params.BusID},
             {"$set":{isBooked:false}, "$unset":{PassengerDetails:1, BookingID:1, PhoneNumber:1, DateOfBooking:1}});
@@ -58,6 +66,11 @@ router.patch('/reset/:BusID', async(req,res)=>{
 });
 
 router.delete('/deleteAll', async(req,res)=>{
+    
+    if(req.UserData.isAdmin==false){
+        console.log("Access Denied");
+        res.json("Access Denied");
+    }
     try{
         const removedBus = await Bus.remove({});
         console.log(removedBus.deletedCount + " Bus(es) removed")
@@ -70,6 +83,10 @@ router.delete('/deleteAll', async(req,res)=>{
 
 
 router.delete('/deleteBus', async(req,res)=>{
+    if(req.UserData.isAdmin==false){
+        console.log("Access Denied");
+        res.json("Access Denied");
+    }
     try{
         const removedBus = await Bus.remove({_id:req.body.busId});
         res.json(removedBus);

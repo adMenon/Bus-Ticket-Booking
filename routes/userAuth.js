@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -17,7 +18,10 @@ router.post('/signup', (req,res)=>{
             PhoneNumber: req.body.PhoneNumber,
             Password: hash
         });
-
+        if(req.body.AdminCode == process.env.ADMIN_KEY)
+        {
+            user.isAdmin = true;
+        }
         try{
             const createUser = await user.save();
             console.log(createUser);
@@ -49,8 +53,14 @@ router.post('/login', async(req,res)=>{
             console.log("Auth failed");
             res.json("Auth failed");
         }
+        const token = jwt.sign({
+            email: getUser.email,
+            Name : getUser.Name,
+            PhoneNumber : getUser.PhoneNumber,
+            isAdmin: getUser.isAdmin
+        }, process.env.PRIVATE_KEY, { expiresIn: "1h"});
         console.log("Auth Successful");
-        res.json("Auth successful");
+        res.json({message:"Auth successful",token:token});
     }
     catch(err){
         res.json(err);

@@ -3,33 +3,43 @@ const uniqid = require('uniqid');
 const router = express.Router();
 
 const Bus = require("../models/bus");
-const User = require("../models/user");
 
 
 
-// router.get('/showOpen', async(req, res)=>{
-//     console.log(req.query);
-//     try{
-//         const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:false});
-//         res.send({"Open Seats":seatDetails});
-//     }
-//     catch(err){
-//         res.json({"error":"error"});
+router.get('/showOpen', async(req, res)=>{
+    console.log(req);
+    if(req.query.BusID==undefined)
+    {
+        console.log("BusId invalid");
+        res.json({Message:"BusID invalid"});
+    }
+    try{
+
+        const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:false});
+        res.send({"Open Seats":seatDetails});
+    }
+    catch(err){
+        res.json({"error":"error"});
         
-//     }
-// });
-// router.get('/showClosed', async(req, res)=>{
-//     console.log(req.query);
-//     try{
+    }
+});
+router.get('/showClosed', async(req, res)=>{
+    console.log(req.query);
+    if(req.query.BusID==undefined)
+    {
+        console.log("BusId invalid");
+        res.json({Message:"BusID invalid"});
+    }
+    try{
 
-//         const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:true});
-//         res.send({"Closed Seats":seatDetails});
-//     }
-//     catch(err){
-//         res.json({"error":"error"});
+        const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:true});
+        res.send({"Closed Seats":seatDetails});
+    }
+    catch(err){
+        res.json({"error":"error"});
         
-//     }
-// })
+    }
+})
 
 
 // router.post('/book',async(req,res)=>{

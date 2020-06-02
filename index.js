@@ -22,15 +22,15 @@ const adminRoute = require('./routes/admin');
 const ticketStatusRoute = require('./routes/ticketStatus');
 const userAuthRoutes = require('./routes/userAuth');
 
-
+const checkAuth = require("./middleware/checkAuth");
 
 
 //Middlewares
 
 app.use('/userAuth', userAuthRoutes);
-app.use('/newBooking', newBookingRoute);
-app.use('/admin', adminRoute);
-app.use('/ticketStatus', ticketStatusRoute);
+app.use('/newBooking', checkAuth, newBookingRoute);
+app.use('/admin', checkAuth, adminRoute);
+app.use('/ticketStatus',checkAuth, ticketStatusRoute);
 
 
 //Routes
