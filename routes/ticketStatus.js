@@ -5,17 +5,23 @@ const Bus = require("../models/bus");
 
 
 router.post('/viewTicket',async (req,res)=>{
+    if(req.query.BusID==undefined)
+    {
+        console.log("BusId invalid");
+        return res.status(400).json({Message:"BusID invalid"});
+    }
     try{
         var bookingID = req.body.bookingID;
         const getTickets = await Bus.find({BookingID:bookingID}).select({_id:0,__v:0});
-        console.log(getTickets);
         if(getTickets.length==0){
-            res.send("No tickets found");
+            console.log("No tickets found");
+            return res.status(400).json({Message:"No tickets found"});
         }
-        res.json(getTickets);
+        console.log(getTickets);
+        res.status(200).json(getTickets);
     }
     catch(err){
-        res.json({Message:err});
+        res.status(500).json({Error:err});
         throw err;
     }
 });
@@ -39,13 +45,13 @@ router.patch('/deleteTicket', async (req,res)=>{
             });
         console.log(updateBus);
         if(updateBus.n==0){
-            res.json({Message: "given seats dont match"});
+            res.status(404).json({Message: "given seats dont match"});
 
         }
-        res.json({Message:updateBus.n +" tickets cancelled"});
+        res.status(200).json({Message:updateBus.n +" tickets cancelled"});
     }
     catch(err){
-        res.json({Message:err});
+        res.status(500).json({Error:err});
         throw err;
     }
 });

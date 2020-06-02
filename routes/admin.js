@@ -10,7 +10,7 @@ router.post('/addBus', async(req, res)=>{
     
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.json("Access Denied");
+        return res.status(403).json({Message:"Access Denied"});
     }
     var noOfSeats = req.body.noOfSeats;
     var busSeats = [];
@@ -24,38 +24,42 @@ router.post('/addBus', async(req, res)=>{
     try{
         const newBus = await Bus.insertMany(busSeats);
         console.log(newBus)
-        res.json(newBus);
-        busId++;
+        res.status(201).json({Message:"Bus added with "+ newBus.length+" seats", BusID:newBus[0].BusID}); 
     }catch(err){
-        res.json({Message:err});
+        res.status(500).json({Error:err});
         throw err;
     }
 });
-router.get('/getBus/:BusID', async(req,res)=>{
+router.get('/Bus/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.json("Access Denied");
+        return res.status(403).json({Message:"Access Denied"});
     }
     try{
         if(req.params.BusID==undefined)
         {
             console.log("BusId invalid");
-            res.json({Message:"BusID invalid"});
+            return res.status(400).json({Message:"BusID invalid"});
         }
         const Buses = await Bus.find({BusID:req.params.BusID});
         console.log(Buses);
-        res.json(Buses);
+        if(Buses.length==0)
+        {
+            console.log("Bus not found");
+            return res.status(404).json({Message:"Bus not found"});
+        }
+        res.status(200).json(Buses);
     }
     catch(err){
-        res.send(err);
+        res.status(500).json({Error:err});
         throw err;
     }
 });
 
-router.get('/allBus', async(req,res)=>{
+router.get('/allBuses', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.json("Access Denied");
+        return res.status(403).json({Message:"Access Denied"});
     }
     try{
         // console.log("here");
@@ -67,33 +71,38 @@ router.get('/allBus', async(req,res)=>{
                     }
             }]);
         console.log(Buses);
-        res.json(Buses);
+        res.status(200).json(Buses);
     }
     catch(err){
-        res.json(err);
+        res.status(500).json({Error:err});
         throw err;
     }
 });
 
 
-router.put('/:BusID', async(req,res)=>{
+router.patch('/Bus/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.json("Access Denied");
+        return res.status(403).json({Message:"Access Denied"});
     }
     try{
         if(req.params.BusID==undefined)
         {
             console.log("BusId invalid");
-            res.json({Message:"BusID invalid"});
+            return res.status(400).json({Message:"BusID invalid"});
         }
         const updateBus = await Bus.updateMany({BusID:req.params.BusID},
             {"$set":{isBooked:false}, "$unset":{PassengerDetails:1, BookingID:1, PhoneNumber:1, DateOfBooking:1}});
-        console.log(updateBus+" \nTickets deleted, seats flushed");
-        res.json("Seats flushed");
+        if(updateBus.n==0){
+            console.log("Bus not found");
+            return res.status(404).json({Message:"Bus not found"});
+        }
+        console.log("Tickets deleted, seats flushed", updateBus);
+        res.status(200).json({Message:"Seats flushed"});
     }
     catch(err){
-        res.send("err");
+        res.status(500).json({Error:err});
+
         throw err;
     }
 });
@@ -102,37 +111,41 @@ router.delete('/deleteAll', async(req,res)=>{
     
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.json("Access Denied");
+        res.status(403).json({Message:"Access Denied"});
     }
     try{
-        const removedBus = await Bus.remove({});
+        const removedBus = await Bus.deleteMany();
         console.log(removedBus.deletedCount + " Bus(es) removed")
-        res.json(removedBus);
+        res.status(200).json({Message: "All buses deleted"});
     }
     catch(err){
-        res.send({"error":err});
+        res.status(500).json({Error:err});;
+        throw err;
     }
 });
 
 
-router.delete('/:BusID', async(req,res)=>{
+router.delete('/Bus/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.json("Access Denied");
+        res.status(403).json({Message:"Access Denied"});
     }
     try{
         if(req.params.BusID==undefined)
         {
             console.log("BusId invalid");
-            res.json({Message:"BusID invalid"});
+            return res.status(400).json({Message:"BusID invalid"});
         }
         const removedBus = await Bus.deleteMany({BusID:req.params.BusID});
+        if(removedBus.n==0){
+            console.log("Bus not found");
+            return res.status(404).json({Message:"Bus not found"});
+        }
         console.log(removedBus)
-        res.json(removedBus);
+        res.status(200).json({Message: "Bus deleted"});
     }
     catch(err){
-
-        res.send({"error":err});
+        res.status(500).json({Error:err});;
         throw err;
     }
 });

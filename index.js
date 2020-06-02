@@ -8,6 +8,7 @@
 
 const mongoose = require("mongoose");
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 require('dotenv/config');
 
@@ -24,27 +25,53 @@ const userAuthRoutes = require('./routes/userAuth');
 
 const checkAuth = require("./middleware/checkAuth");
 
+app.use(morgan('dev'));
 
-//Middlewares
+app.use((req,res,next)=>{
+    res.header('Access-Control-Allow-Origin','*');
+    res.header('Access-Control-Allow-Headers','*');
+    if(req.method == 'OPTIONS'){
+        res.header('Access-Control-Allow-Methods','PUT, POST, GET, PUT, PATCH, DELETE');
+        res.status(200).json({});
+    }
+    next();
+})
 
 app.use('/userAuth', userAuthRoutes);
 app.use('/newBooking', checkAuth, newBookingRoute);
 app.use('/admin', checkAuth, adminRoute);
 app.use('/ticketStatus',checkAuth, ticketStatusRoute);
 
+app.get('/', (req,res)=>{
+    res.status(200).json({Message:"Server works, listening to "+port});
+});
+
+app.use((req,res,next)=>{
+    const error = new Error('Not found');
+    error.status=404;
+    next(error);
+})
+app.use((error,req,res,next) =>{
+    res.status(error.status|| 500).json({
+        error:{
+            Message: error.message
+        }
+    });
+});
+
 
 //Routes
 
 
-app.get('/', (res)=>{
-    res.send({"booyah":"booyah"});
-});
+const port = process.env.PORT||3000 
 
 
-app.listen(3000,(err)=>{
+
+app.listen(port,(err)=>{
     if (err)
         throw err;
-    console.log("Listening to 3000");
+    console.log("Listening to "+port);
+    
 });
 
 

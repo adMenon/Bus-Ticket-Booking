@@ -9,7 +9,7 @@ const User = require('../models/user');
 router.post('/signup', (req,res)=>{
     bcrypt.hash(req.body.Password, 10, async(err,hash)=>{
         if(err){
-            res.json("err");
+            res.status(500).json({Error:err});
             throw err;
         }
         const user = new User({
@@ -25,12 +25,12 @@ router.post('/signup', (req,res)=>{
         try{
             const createUser = await user.save();
             console.log(createUser);
-            res.json({
-                message:'user created'
+            res.status(200).json({
+                Message:'user created'
             });
         }
         catch(err){
-            res.json("err");
+            res.status(500).json({Error:err});
             throw err;
         }
 
@@ -40,18 +40,17 @@ router.post('/signup', (req,res)=>{
 
 router.post('/login', async(req,res)=>{
     try{
-        
         const getUser = await User.findOne({email:req.body.email});
         console.log(getUser);
         if(getUser==null){
-            res.json("Auth failed");
-            throw new Error('Auth failed');
+            console.log("Auth failed");
+            res.status(401).json("Auth failed");
         }
         const authenticator = await bcrypt.compare(req.body.Password, getUser.Password);
         console.log(authenticator);
         if(authenticator!=true){
             console.log("Auth failed");
-            res.json("Auth failed");
+            res.status(401).json("Auth failed");
         }
         const token = jwt.sign({
             email: getUser.email,
@@ -60,10 +59,10 @@ router.post('/login', async(req,res)=>{
             isAdmin: getUser.isAdmin
         }, process.env.PRIVATE_KEY, { expiresIn: "1day"});
         console.log("Auth Successful");
-        res.json({message:"Auth successful",token:token});
+        res.status(200).json({message:"Auth successful",token:token});
     }
     catch(err){
-        res.json(err);
+        res.status(500).json({Error:err});
         throw err;
     }
 });
@@ -71,17 +70,21 @@ router.post('/login', async(req,res)=>{
 
 router.delete('/deleteUser', async(req,res)=>{
     try{
+        if(req.body.email==undefined){
+            console.log("no email passed");
+            res.status(400).json({Message:"No email passed"})
+        }
         const deleteUser = await User.findOneAndDelete({email:req.body.email});
         console.log(deleteUser)
         if(deleteUser==null){
-            res.json("Delete failed");
-            throw new Error('no account failed');
+            console.log(new Error('no account failed')) ;
+            return res.status(404).json({Message:"No account found"});
         }
         console.log(deleteUser);
-        res.json("Deleted");
+        res.status(204).json("Deleted");
     }
     catch(err){
-        res.json("err");
+        res.status(500).json("err");
         throw err;
     }
     

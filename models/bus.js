@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const BusSchema = mongoose.Schema({
     BusID:{
-        type: Number,
+        type: String,
         required: true
     },
     seatNo:{
