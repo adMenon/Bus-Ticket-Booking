@@ -58,7 +58,7 @@ router.post('/login', async(req,res)=>{
             Name : getUser.Name,
             PhoneNumber : getUser.PhoneNumber,
             isAdmin: getUser.isAdmin
-        }, process.env.PRIVATE_KEY, { expiresIn: "1h"});
+        }, process.env.PRIVATE_KEY, { expiresIn: "1day"});
         console.log("Auth Successful");
         res.json({message:"Auth successful",token:token});
     }

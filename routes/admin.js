@@ -1,10 +1,10 @@
 const express = require('express');
+const uniqid = require('uniqid');
 
 const router = express.Router();
 
 const Bus = require("../models/bus");
 
-var busId = 90000;
 
 router.post('/addBus', async(req, res)=>{
     
@@ -14,23 +14,24 @@ router.post('/addBus', async(req, res)=>{
     }
     var noOfSeats = req.body.noOfSeats;
     var busSeats = [];
+    var BusID = uniqid();
     for(var i = 1;i<=noOfSeats;i++){
         busSeats.push(new Bus({
-            BusID:busId,
+            BusID:BusID,
             seatNo: i
         }));
     }
     try{
         const newBus = await Bus.insertMany(busSeats);
         console.log(newBus)
-        res.send(newBus);
+        res.json(newBus);
         busId++;
     }catch(err){
-        res.send("errr");
+        res.json({Message:err});
         throw err;
     }
 });
-router.get('/:BusID', async(req,res)=>{
+router.get('/getBus/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
         res.json("Access Denied");
@@ -51,6 +52,28 @@ router.get('/:BusID', async(req,res)=>{
     }
 });
 
+router.get('/allBus', async(req,res)=>{
+    if(req.UserData.isAdmin==false){
+        console.log("Access Denied");
+        res.json("Access Denied");
+    }
+    try{
+        // console.log("here");
+        const Buses = await Bus.aggregate(
+            [{
+                "$group":{
+                    _id:"$BusID",
+                    count:{"$sum":1}
+                    }
+            }]);
+        console.log(Buses);
+        res.json(Buses);
+    }
+    catch(err){
+        res.json(err);
+        throw err;
+    }
+});
 
 
 router.put('/:BusID', async(req,res)=>{

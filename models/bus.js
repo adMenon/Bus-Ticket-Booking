@@ -32,5 +32,5 @@ const BusSchema = mongoose.Schema({
         type:Object
     }
 });
-
+BusSchema.index({BusID:1, seatNo:1},{"unique":true});
 module.exports = mongoose.model('Bus', BusSchema);

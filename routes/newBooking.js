@@ -16,10 +16,10 @@ router.get('/showOpen', async(req, res)=>{
     try{
 
         const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:false}).select({seatNo:1, _id:0});
-        res.send({"Open Seats":seatDetails});
+        res.json({"Open Seats":seatDetails});
     }
     catch(err){
-        res.json({"error":"error"});
+        res.json({"error":err});
         
     }
 });
@@ -33,10 +33,10 @@ router.get('/showClosed', async(req, res)=>{
     try{
         
         const seatDetails = await Bus.find({BusID:req.query.BusID, isBooked:true}).select({seatNo:1, _id:0});
-        res.send({"Closed Seats":seatDetails});
+        res.json({"Closed Seats":seatDetails});
     }
     catch(err){
-        res.json({"error":"error"});
+        res.json({"error":err});
         
     }
 })
