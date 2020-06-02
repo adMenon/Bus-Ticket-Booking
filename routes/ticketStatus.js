@@ -32,7 +32,7 @@ router.patch('/deleteTicket', async (req,res)=>{
         var seats = req.body.seats;
         var BusID = req.body.BusID;
         
-        if(BusID==undefined || BookingID==undefined || BusID==undefined )
+        if(BusID==undefined || BookingID==undefined || seats==undefined )
         {
             console.log("input invalid");
             return res.status(400).json({Message:"input invalid"});
