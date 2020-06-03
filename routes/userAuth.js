@@ -82,10 +82,10 @@ router.delete('/deleteUser', async(req,res)=>{
             return res.status(404).json({Message:"No account found"});
         }
         console.log(deleteUser);
-        res.status(204).json("Deleted");
+        res.status(204).json({Message:"User Deleted"});
     }
     catch(err){
-        res.status(500).json("err");
+        res.status(500).json({Error:err}));
         throw err;
     }
     
