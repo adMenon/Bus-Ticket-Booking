@@ -1,11 +1,3 @@
-// const mongoose = require("mongoose");
-
-// mongoose.connect("mongodb://localhost:27017/hcTest1", { useNewUrlParser: true, useUnifiedTopology: true  },  (error)=>{
-//     if (error)
-//         throw error;
-//     console.log("database connection successfull");
-// });
-
 const mongoose = require("mongoose");
 const express = require("express");
 const morgan = require("morgan");
@@ -43,6 +35,7 @@ app.use('/admin', checkAuth, adminRoute);
 app.use('/ticketStatus',checkAuth, ticketStatusRoute);
 
 app.get('/', (req,res)=>{
+    console.log('Success');
     res.status(200).json({Message:"Server works, listening to "+port});
 });
 
