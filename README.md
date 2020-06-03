@@ -1,4 +1,5 @@
-# Bus-Ticket-Booking
+# Bus-Ticket-Booking 
+(Take-home assignment)
 
 The backend server uses a JWT based login system. So initialy use the  Signup API to create an account.
 
