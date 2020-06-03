@@ -85,7 +85,7 @@ router.delete('/deleteUser', async(req,res)=>{
         res.status(204).json({Message:"User Deleted"});
     }
     catch(err){
-        res.status(500).json({Error:err}));
+        res.status(500).json({Error:err});
         throw err;
     }
     
