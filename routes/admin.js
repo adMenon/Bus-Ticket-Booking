@@ -71,7 +71,10 @@ router.get('/allBuses', async(req,res)=>{
                     }
             }]);
         console.log(Buses);
-        res.status(200).json(Buses);
+        if(Buses.length==0){
+            return res.status(404).json({Message: "No buses found"});
+        }
+        res.status(200).json({Buses:Buses});
     }
     catch(err){
         res.status(500).json({Error:err});

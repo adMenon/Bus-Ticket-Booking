@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
     PhoneNumber:{
         type:String,
         required:true,
-        unique:true
+        match: /^$|^\d{10}$/ 
     },
     Password:{
         type: String,

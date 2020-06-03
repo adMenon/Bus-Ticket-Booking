@@ -5,14 +5,14 @@ const Bus = require("../models/bus");
 
 
 router.post('/viewTicket',async (req,res)=>{
-    if(req.query.BusID==undefined)
+    if(req.body.BusID==undefined)
     {
-        console.log("BusId invalid");
+        console.log("BusID invalid");
         return res.status(400).json({Message:"BusID invalid"});
     }
     try{
-        var bookingID = req.body.bookingID;
-        const getTickets = await Bus.find({BookingID:bookingID}).select({_id:0,__v:0});
+        var BookingID = req.body.BookingID;
+        const getTickets = await Bus.find({BookingID:BookingID}).select({_id:0,__v:0});
         if(getTickets.length==0){
             console.log("No tickets found");
             return res.status(400).json({Message:"No tickets found"});
@@ -49,8 +49,7 @@ router.patch('/deleteTicket', async (req,res)=>{
             });
         console.log(updateBus);
         if(updateBus.n==0){
-            res.status(404).json({Message: "given seats dont match"});
-
+            return res.status(404).json({Message: "given seats dont match"});
         }
         res.status(200).json({Message:updateBus.n +" tickets cancelled"});
     }
