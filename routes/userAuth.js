@@ -9,8 +9,9 @@ const User = require('../models/user');
 router.post('/signup', (req,res)=>{
     bcrypt.hash(req.body.Password, 10, async(err,hash)=>{
         if(err){
-            res.status(500).json({Error:err});
-            throw err;
+            console.log(err);
+            return res.status(500).json({Error:err});
+            
         }
         const user = new User({
             Name: req.body.Name,
@@ -44,13 +45,13 @@ router.post('/login', async(req,res)=>{
         console.log(getUser);
         if(getUser==null){
             console.log("Auth failed");
-            res.status(401).json("Auth failed");
+            return res.status(401).json("Auth failed");
         }
         const authenticator = await bcrypt.compare(req.body.Password, getUser.Password);
         console.log(authenticator);
         if(authenticator!=true){
             console.log("Auth failed");
-            res.status(401).json("Auth failed");
+            return res.status(401).json("Auth failed");
         }
         const token = jwt.sign({
             email: getUser.email,
@@ -72,7 +73,7 @@ router.delete('/deleteUser', async(req,res)=>{
     try{
         if(req.body.email==undefined){
             console.log("no email passed");
-            res.status(400).json({Message:"No email passed"})
+            return res.status(400).json({Message:"No email passed"})
         }
         const deleteUser = await User.findOneAndDelete({email:req.body.email});
         console.log(deleteUser)

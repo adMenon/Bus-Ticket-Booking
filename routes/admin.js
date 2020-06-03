@@ -114,7 +114,7 @@ router.delete('/deleteAll', async(req,res)=>{
     
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.status(403).json({Message:"Access Denied"});
+        return res.status(403).json({Message:"Access Denied"});
     }
     try{
         const removedBus = await Bus.deleteMany();
@@ -131,7 +131,7 @@ router.delete('/deleteAll', async(req,res)=>{
 router.delete('/Bus/:BusID', async(req,res)=>{
     if(req.UserData.isAdmin==false){
         console.log("Access Denied");
-        res.status(403).json({Message:"Access Denied"});
+        return res.status(403).json({Message:"Access Denied"});
     }
     try{
         if(req.params.BusID==undefined)
